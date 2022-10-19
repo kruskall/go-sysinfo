@@ -140,6 +140,22 @@ func (p *process) User() (types.UserInfo, error) {
 	}, nil
 }
 
+func (p *process) UserOld() (types.UserInfo, error) {
+	var task procTaskAllInfo
+	if err := getProcTaskAllInfo(p.pid, &task); err != nil {
+		return types.UserInfo{}, err
+	}
+
+	return types.UserInfo{
+		UID:  strconv.Itoa(int(task.Pbsd.Pbi_ruid)),
+		EUID: strconv.Itoa(int(task.Pbsd.Pbi_uid)),
+		SUID: strconv.Itoa(int(task.Pbsd.Pbi_svuid)),
+		GID:  strconv.Itoa(int(task.Pbsd.Pbi_rgid)),
+		EGID: strconv.Itoa(int(task.Pbsd.Pbi_gid)),
+		SGID: strconv.Itoa(int(task.Pbsd.Pbi_svgid)),
+	}, nil
+}
+
 func (p *process) Environment() (map[string]string, error) {
 	return p.env, nil
 }

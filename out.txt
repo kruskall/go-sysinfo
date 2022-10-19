@@ -1,0 +1,3 @@
+    process_darwin_test.go:153: EGID!=GID for pid: 149
+    process_darwin_test.go:154: OLD: GID=0 SGID=0 EGID=88
+    process_darwin_test.go:155: NEW: GID=0 SGID=0 EGID=88

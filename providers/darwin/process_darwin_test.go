@@ -127,3 +127,39 @@ func TestProcesses(t *testing.T) {
 
 	t.Log(ps[0].Info())
 }
+
+func TestCompareUser(t *testing.T) {
+	var s darwinSystem
+	ps, err := s.Processes()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, p := range ps {
+		pp := p.(*process)
+		u, err := pp.User()
+		if err != nil {
+			t.Logf("err for pid %d with new user code: %v\n", pp.pid, err)
+			continue
+		}
+
+		oldU, err := pp.UserOld()
+		if err != nil {
+			t.Logf("err for pid %d with old user code: %v\n", pp.pid, err)
+			continue
+		}
+
+		if oldU.EGID != oldU.GID  {
+			t.Logf("EGID!=GID for pid: %d\n", p.PID())
+			t.Logf("OLD: GID=%s SGID=%s EGID=%s\n", oldU.GID, oldU.SGID, oldU.EGID)
+			t.Logf("NEW: GID=%s SGID=%s EGID=%s\n", oldU.GID, oldU.SGID, oldU.EGID)
+		}
+
+		require.Equal(t, oldU.UID, u.UID, "UID")
+		require.Equal(t, oldU.EUID, u.EUID, "EUID")
+		require.Equal(t, oldU.SUID, u.SUID, "SUID")
+		require.Equal(t, oldU.GID, u.GID, "GID")
+		require.Equal(t, oldU.SGID, u.SGID, "SGID")
+		require.Equal(t, oldU.EGID, u.EGID, "EGID")
+	}
+}
